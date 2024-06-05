@@ -1,35 +1,31 @@
 const bcrypt = require("bcrypt");
-const { firestore, auth } = require("../Config/firebaseConfig");
+const { firestore , auth} = require("firebase-admin");
 
 async function RegisterHandler(request, h) {
     const { name, email, password } = request.payload;
     let response;
-
+    console.log
     try {
         const hashedPassword = await bcrypt.hash(password, 10);
-        const userSnapshot = await firestore.collection('Users').where('email', '===', email).get();
-        if (!userSnapshot.empty) {
-            response = h.response({
-                error: true,
-                message: "Email Already In Use"
-            });
-        } else {
-            await firestore.collection('Users').add({
-                name: name,
-                email: email,
-                password: hashedPassword  
-            });
-
-            response = h.response({
-                error: false,
-                message: "User Created"
-            });
-        }
+        console.log(firestore);
+        const newUser = await firestore.collection("Users").where('email',"==",email).get();
+        console.log("sebelum add collection");
+        console.log
+        await firestore.collection('Users').add({
+            name: name,
+            email: email,
+            password: hashedPassword  
+        });
+        response = h.response({
+            error: false,
+            message: "User Created"
+        });
+            
     } catch (error) {
         console.error('Error registering user:', error);
         response = h.response({
             error: true,
-            message: error.message
+            message: "Email Already In Use",
         });
     }
 
@@ -83,10 +79,12 @@ async function LoginHandler(request, h) {
 }
 
 async function tesHandler(request,h){
-    const { email, password } = request.payload;
+    console.log(firestore);
+    console.log("----------");
+    console.log(auth);
     let response = h.response({
-        email: email,
-        data: firestore 
+        data: firestore,
+        data2: auth
     })
     return response
 }
@@ -96,3 +94,4 @@ module.exports = {
     LoginHandler,
     tesHandler
 };
+

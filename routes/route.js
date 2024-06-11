@@ -1,7 +1,11 @@
 const {
     RegisterHandler,
     LoginHandler,
-    tesHandler
+    tesHandler,
+    getDestinationHandler,
+    addFavorit,
+    getFavorit,
+    deleteFavorit
   } = require ("../Controllers/controller")
 
 const routes =[
@@ -17,9 +21,24 @@ const routes =[
         handler: RegisterHandler
     },
     {
-        path: '/tes',
+        path: '/destination',
+        method: 'GET',
+        handler: getDestinationHandler
+    },
+    {
+        path: '/addFavorit',
         method: 'POST',
-        handler: tesHandler
+        handler: addFavorit 
+    },
+    {
+        path: '/favorit/{userId}',
+        method: 'GET',
+        handler: getFavorit 
+    },
+    {
+        path: '/deleteFavorit',
+        method: 'POST',
+        handler: deleteFavorit 
     }
 ];
 

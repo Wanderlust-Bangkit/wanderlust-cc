@@ -5,10 +5,12 @@ const {
     getDestinationHandler,
     addFavorit,
     getFavorit,
-    deleteFavorit
+    deleteFavorit,
+    createItenary,
+    getItenary
   } = require ("../Controllers/controller")
 
-const routes =[
+const routes = [
     {
         path: '/login',
         method: 'POST',
@@ -39,7 +41,18 @@ const routes =[
         path: '/deleteFavorit',
         method: 'POST',
         handler: deleteFavorit 
-    }
+    },
+    {
+        path: '/itenary',
+        method: 'POST',
+        handler: createItenary
+    },
+    {
+        path: '/itenary',
+        method: 'GET',
+        handler: getItenary
+    },
+    
 ];
 
 module.exports = routes;

@@ -29,7 +29,6 @@ async function RegisterHandler(request, h) {
       password: hashedPassword,
     });
 
-    console.log('Document written with ID:', docRef.id);
 
     return h.response({
       error: false,
@@ -126,12 +125,31 @@ async function getDestinationHandler(request, h) {
 }
 
 async function addFavorit(request, h) {
-  const { userId, destinationId } = request.payload;
+  const { destinationId } = request.payload;
+  const token = request.headers.authorization;
+
   let response;
   try {
+    if (!token) {
+        return h.response({
+          error: true,
+          message: 'Token not found',
+        });
+      }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+        return h.response({
+            error: true,
+            message: 'Token not valid',
+        });
+    }
+
+    const userId = decoded.userId;
+      
     const destinationRef = doc(db, 'destination', destinationId);
     const destinationDoc = await getDoc(destinationRef);
-    console.log(destinationDoc.data());
 
     const favoritColRef = collection(db, 'Users', userId, 'Favorites');
     await setDoc(doc(favoritColRef, destinationId), destinationDoc.data());
@@ -174,14 +192,30 @@ async function getFavorit(request, h) {
 }
 
 async function deleteFavorit(request, h) {
-  const { userId, destinationId } = request.payload;
+  const { destinationId } = request.payload;
+  const token = request.headers.authorization;
+
   let response;
   try {
-    console.log('1');
+    if (!token) {
+        return h.response({
+          error: true,
+          message: 'Token not found',
+        });
+      }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+        return h.response({
+            error: true,
+            message: 'Token not valid',
+        });
+    }
+
+    const userId = decoded.userId;
     const favoritColRef = collection(db, 'Users', userId, 'Favorites');
-    console.log('a');
     await deleteDoc(doc(favoritColRef, destinationId));
-    console.log('2');
     response = h.response({
       error: true,
       message: 'Delete favorite',
@@ -237,7 +271,6 @@ async function createItenary(request, h) {
       userId: decoded.userId,
     });
 
-    console.log('Document written with ID:', docRef.id);
   } catch (error) {
     console.error('Error adding itenary:', error);
     return h.response({

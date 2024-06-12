@@ -6,8 +6,10 @@ const {
     addFavorit,
     getFavorit,
     deleteFavorit,
-    createItenary,
-    getItenary
+    createItinenary,
+    getItinenary,
+    getDestinationByCategory,
+    getAllCategory
   } = require ("../Controllers/controller")
 
 const routes = [
@@ -43,15 +45,25 @@ const routes = [
         handler: deleteFavorit 
     },
     {
-        path: '/itenary',
+        path: '/itinenary',
         method: 'POST',
-        handler: createItenary
+        handler: createItinenary
     },
     {
-        path: '/itenary',
+        path: '/itinenary',
         method: 'GET',
-        handler: getItenary
+        handler: getItinenary
     },
+    {
+        path: '/destination/{category}',
+        method: 'GET',
+        handler: getDestinationByCategory
+    },
+    {
+        path: '/categories',
+        method: 'GET',
+        handler: getAllCategory
+    }
     
 ];
 

@@ -2,7 +2,7 @@ const bcrypt = require("bcrypt");
 const { db, auth } = require("../Config/firebaseConfig");
 const { collection, getDocs, addDoc, query, where ,doc, getDoc, setDoc, deleteDoc} = require("@firebase/firestore/lite");
 const jwt = require("jsonwebtoken");
-const {generateTourSequence, loadModel} = require("../model.js")
+const {generateTourSequence, loadModel} = require("../model")
 
 require('dotenv').config();
 
@@ -394,7 +394,7 @@ async function getAllCategory(request, h) {
 }
 
 async function destinationML(request,h){
-    const {initialLocation} = request.payload || 'Kota Tua';
+    const { initialLocation } = request.payload || { initialLocation: 'Kota Tua' };                                         
     let response;
 
     try {
@@ -411,7 +411,7 @@ async function destinationML(request,h){
         });
 
         await loadModel();
-        const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id)
+        const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id);
 
         response = h.response({
             error: false,

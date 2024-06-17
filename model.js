@@ -1,19 +1,21 @@
+const tf = require('@tensorflow/tfjs-node');
+
 let model;
 
-const place_name_to_id = {
-    'Kota Tua': 1,
-    'Mall Thamrin City': 2,
-};
+// const place_name_to_id = {
+//     'Kota Tua': 1,
+//     'Mall Thamrin City': 2,
+// };
 
-const id_to_place_name = {
-    1: 'Kota Tua',
-    2: 'Mall Thamrin City',
-};
+// const id_to_place_name = {
+//     1: 'Kota Tua',
+//     2: 'Mall Thamrin City',
+// };
 
-const place_id_to_city = {
-    1: 'Jakarta',
-    2: 'Jakarta'
-};
+// const place_id_to_city = {
+//     1: 'Jakarta',
+//     2: 'Jakarta'
+// };
 
 const window_size = 2;
 
@@ -22,7 +24,7 @@ async function loadModel() {
     console.log('Model loaded successfully');
 }
 
-function predictNextLocation(currentSequence) {
+function predictNextLocation(currentSequence,place_id_to_city, id_to_place_name, place_name_to_id) {
     const currentSequenceIds = currentSequence.map(place => place_name_to_id[place]);
     const currentCity = place_id_to_city[currentSequenceIds[0]];
     const inputSequence = currentSequenceIds.slice(-window_size);
@@ -48,12 +50,12 @@ function predictNextLocation(currentSequence) {
     });
 }
 
-async function generateTourSequence(initialLocation) {
+async function generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id) {
     // This function assumes initialLocation and category are already filtered
     const tourSequence = [initialLocation];
     
     while (tourSequence.length < 5) {
-        const nextLocation = await predictNextLocation(tourSequence.slice(-window_size));
+        const nextLocation = await predictNextLocation(tourSequence.slice(-window_size),place_id_to_city, id_to_place_name, place_name_to_id);
         tourSequence.push(nextLocation);
     }
 
@@ -68,4 +70,7 @@ async function main() {
     console.log(`The generated tour sequence is: ${tourSequence}`);
 }
 
-main();
+module.exports={
+    generateTourSequence,
+    loadModel
+}

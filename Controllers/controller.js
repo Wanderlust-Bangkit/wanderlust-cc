@@ -2,6 +2,7 @@ const bcrypt = require("bcrypt");
 const { db, auth } = require("../Config/firebaseConfig");
 const { collection, getDocs, addDoc, query, where ,doc, getDoc, setDoc, deleteDoc} = require("@firebase/firestore/lite");
 const jwt = require("jsonwebtoken");
+const {generateTourSequence, loadModel} = require("../model.js")
 
 require('dotenv').config();
 
@@ -126,75 +127,110 @@ async function getDestinationHandler(request,h){
     return response
 }
 
-async function addFavorit(request , h){
-    const { userId, destinationId } = request.payload;
-    let response;
-    try {
-        const destinationRef = doc(db,'destination',destinationId);
-        const destinationDoc = await getDoc(destinationRef);
-        console.log(destinationDoc.data());
+async function addFavorit(request, h) {
+  const { destinationId } = request.payload;
+  const token = request.headers.authorization;
 
-        const favoritColRef = collection(db,'Users',userId, 'Favorites');
-        await setDoc(doc(favoritColRef, destinationId), destinationDoc.data());
-
-        response = h.response({
-            error: false,
-            message: "Adding to favorite"
+  let response;
+  try {
+    if (!token) {
+        return h.response({
+          error: true,
+          message: 'Token not found',
         });
-    } catch (error) {
-        response = h.response({
+      }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+        return h.response({
             error: true,
-            message: error.message
+            message: 'Token not valid',
         });
     }
-    return response;
+
+    const userId = decoded.userId;
+      
+    const destinationRef = doc(db, 'destination', destinationId);
+    const destinationDoc = await getDoc(destinationRef);
+
+    const favoritColRef = collection(db, 'Users', userId, 'Favorites');
+    await setDoc(doc(favoritColRef, destinationId), destinationDoc.data());
+
+    response = h.response({
+      error: false,
+      message: 'Adding to favorite',
+    });
+  } catch (error) {
+    response = h.response({
+      error: true,
+      message: error.message,
+    });
+  }
+  return response;
 }
 
-async function getFavorit(request,h){
-    const  userId = request.params.userId;
-    let response;
-    try {
-        const favoritColRef = collection(db,'Users',userId, 'Favorites');
-        const favorite = await getDocs(favoritColRef);
-        const data= [];
-        favorite.forEach((doc)=>{
-            data.push({ id: doc.id, ...doc.data() });
-        })
+async function getFavorit(request, h) {
+  const userId = request.params.userId;
+  let response;
+  try {
+    const favoritColRef = collection(db, 'Users', userId, 'Favorites');
+    const favorite = await getDocs(favoritColRef);
+    const data = [];
+    favorite.forEach((doc) => {
+      data.push({ id: doc.id, ...doc.data() });
+    });
 
-        response = h.response({
-            error: false,
-            data: data
-        });
-    } catch (error) {
-        response = h.response({
-            error: true,
-            message: error.message
-        });
-    }
-    return response;
+    response = h.response({
+      error: false,
+      data: data,
+    });
+  } catch (error) {
+    response = h.response({
+      error: true,
+      message: error.message,
+    });
+  }
+  return response;
 }
 
-async function deleteFavorit(request,h){
-    const { userId, destinationId } = request.payload;
-    let response;
-    try{
-        console.log('1');
-        const favoritColRef = collection(db, 'Users', userId, 'Favorites');
-        console.log('a');
-        await deleteDoc(doc(favoritColRef, destinationId));
-        console.log('2');
-        response = h.response({
-            error: true,
-            message: "Delete favorite"
+async function deleteFavorit(request, h) {
+  const { destinationId } = request.payload;
+  const token = request.headers.authorization;
+
+  let response;
+  try {
+    if (!token) {
+        return h.response({
+          error: true,
+          message: 'Token not found',
         });
-    } catch (error){
-        response = h.response({
+      }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+    if (!decoded) {
+        return h.response({
             error: true,
-            message: error.message
+            message: 'Token not valid',
         });
     }
 
-    return response;
+    const userId = decoded.userId;
+    const favoritColRef = collection(db, 'Users', userId, 'Favorites');
+    await deleteDoc(doc(favoritColRef, destinationId));
+    response = h.response({
+      error: true,
+      message: 'Delete favorite',
+    });
+  } catch (error) {
+    response = h.response({
+      error: true,
+      message: error.message,
+    });
+  }
+
+  return response;
 }
 
 async function createItinenary(request, h) {
@@ -357,6 +393,40 @@ async function getAllCategory(request, h) {
     return response;
 }
 
+async function destinationML(request,h){
+    const {initialLocation} = request.payload || 'Kota Tua';
+    let response;
+
+    try {
+        const destination = collection(db, 'destination');
+        const querySnapshot = await getDocs(destination);
+        const id_to_place_name = {};
+        const place_name_to_id = {};
+        const place_id_to_city = {};
+        querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        id_to_place_name[data.placeId] = data.placeName;
+        place_name_to_id[data.placeName] = data.placeId;
+        place_id_to_city[data.placeId] = data.city;
+        });
+
+        await loadModel();
+        const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id)
+
+        response = h.response({
+            error: false,
+            data :  tourSequence
+        })
+    } catch(error){
+        console.error('Error get destination:', error);
+        response = h.response({
+            error: true,
+            message: error.message
+        });
+    }
+    return response
+}
+
 module.exports = {
     RegisterHandler,
     LoginHandler,
@@ -367,5 +437,6 @@ module.exports = {
     createItinenary,
     getItinenary,
     getDestinationByCategory,
-    getAllCategory
+    getAllCategory,
+    destinationML
 };

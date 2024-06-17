@@ -9,7 +9,8 @@ const {
     createItinenary,
     getItinenary,
     getDestinationByCategory,
-    getAllCategory
+    getAllCategory,
+    destinationML
   } = require ("../Controllers/controller")
 
 const routes = [
@@ -63,6 +64,10 @@ const routes = [
         path: '/categories',
         method: 'GET',
         handler: getAllCategory
+    },{
+        path:'/suggestion',
+        method: 'GET',
+        handler: destinationML
     }
     
 ];

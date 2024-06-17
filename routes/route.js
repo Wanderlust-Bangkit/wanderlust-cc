@@ -1,7 +1,6 @@
 const {
     RegisterHandler,
     LoginHandler,
-    tesHandler,
     getDestinationHandler,
     addFavorit,
     getFavorit,

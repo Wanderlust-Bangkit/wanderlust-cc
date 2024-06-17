@@ -1,4 +1,6 @@
 const tf = require('@tensorflow/tfjs-node');
+const path = require('path');
+
 
 let model;
 
@@ -20,7 +22,7 @@ let model;
 const window_size = 2;
 
 async function loadModel() {
-    model = await tf.loadLayersModel('./model.json');
+    model = await tf.loadLayersModel('https://storage.googleapis.com/modelwanderlust/model.json');
     console.log('Model loaded successfully');
 }
 

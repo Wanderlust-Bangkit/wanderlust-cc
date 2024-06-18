@@ -31,7 +31,7 @@ function predictNextLocation(currentSequence,place_id_to_city, id_to_place_name,
     const currentCity = place_id_to_city[currentSequenceIds[0]];
     const inputSequence = currentSequenceIds.slice(-window_size);
 
-    const inputTensor = tf.tensor2d([inputSequence], [1, window_size]);
+    const inputTensor = tf.tensor(inputSequence, [1, window_size]);
 
     return model.predict(inputTensor).data().then(predictions => {
         inputSequence.forEach(id => {

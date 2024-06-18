@@ -393,11 +393,46 @@ async function getAllCategory(request, h) {
     return response;
 }
 
+async function search(request,h){
+    const {keyword} = request.params;
+    let response;
+
+    try{
+        if (keyword === ""){
+            response = getDestinationHandler();
+        } else{
+            const destination = collection(db, 'destination');
+            const querySnapshot = await getDocs(destination);
+            let data= [];
+            querySnapshot.forEach((doc)=>{
+                let a = {};
+                a = {...doc.data()}; 
+                if(a.placeName.toLowerCase().includes(keyword)){
+                    data.push({ id: doc.id, ...doc.data() });
+                }
+            });
+            response = h.response({
+                error: false,
+                data :  data
+            })
+        }
+
+    } catch (error) {
+        response = h.response({
+            error: true,
+            message: error.message
+        });
+    }
+
+    return response;
+}
+
 async function destinationML(request,h){
     const { initialLocation } = request.payload || { initialLocation: 'Kota Tua' };                                         
     let response;
 
     try {
+        await loadModel();
         const destination = collection(db, 'destination');
         const querySnapshot = await getDocs(destination);
         const id_to_place_name = {};
@@ -410,7 +445,6 @@ async function destinationML(request,h){
         place_id_to_city[data.placeId] = data.city;
         });
 
-        await loadModel();
         const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id);
 
         response = h.response({
@@ -438,5 +472,6 @@ module.exports = {
     getItinenary,
     getDestinationByCategory,
     getAllCategory,
-    destinationML
+    destinationML,
+    search
 };

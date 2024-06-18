@@ -9,7 +9,8 @@ const {
     getItinenary,
     getDestinationByCategory,
     getAllCategory,
-    destinationML
+    destinationML,
+    search
   } = require ("../Controllers/controller")
 
 const routes = [
@@ -63,6 +64,11 @@ const routes = [
         path: '/categories',
         method: 'GET',
         handler: getAllCategory
+    },
+    {
+        path:'/search/{keyword}',
+        method: 'GET',
+        handler: search
     },{
         path:'/suggestion',
         method: 'GET',

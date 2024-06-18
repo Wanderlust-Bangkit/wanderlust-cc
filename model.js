@@ -1,44 +1,51 @@
+// import * as tf from '@tensorflow/tfjs'; 
+
 const tf = require('@tensorflow/tfjs-node');
 const path = require('path');
+const axios = require('axios');
 
 
 let model;
 
-// const place_name_to_id = {
-//     'Kota Tua': 1,
-//     'Mall Thamrin City': 2,
-// };
+const place_name_to_id = {
+    'Kota Tua': 1,
+    'Mall Thamrin City': 2,
+};
 
-// const id_to_place_name = {
-//     1: 'Kota Tua',
-//     2: 'Mall Thamrin City',
-// };
+const id_to_place_name = {
+    1: 'Kota Tua',
+    2: 'Mall Thamrin City',
+};
 
-// const place_id_to_city = {
-//     1: 'Jakarta',
-//     2: 'Jakarta'
-// };
+const place_id_to_city = {
+    1: 'Jakarta',
+    2: 'Jakarta'
+};
 
 const window_size = 2;
 
-async function loadModel() {
-    model = await tf.loadLayersModel('https://storage.googleapis.com/modelwanderlust/model.json');
-    console.log('Model loaded successfully');
-}
-
-function predictNextLocation(currentSequence,place_id_to_city, id_to_place_name, place_name_to_id) {
+async function predictNextLocation(currentSequence, place_id_to_city, id_to_place_name, place_name_to_id) {
     const currentSequenceIds = currentSequence.map(place => place_name_to_id[place]);
     const currentCity = place_id_to_city[currentSequenceIds[0]];
     const inputSequence = currentSequenceIds.slice(-window_size);
 
-    const inputTensor = tf.tensor2d([inputSequence], [1, window_size]);
+    console.log('Making prediction for input sequence:', inputSequence);
 
-    return model.predict(inputTensor).data().then(predictions => {
+    try {
+        const response = await axios.post('http://34.135.211.146/v1/models/tour_locations_model:predict', {
+            instances: [inputSequence]
+        });
+
+        let predictions = response.data.predictions[0];
+
+        console.log('Predictions:', predictions);
+
+        // Zero out probabilities for locations in the input sequence
         inputSequence.forEach(id => {
             predictions[id] = 0;
         });
 
-        // Set probabilities of locations not in the current city to 0
+        // Zero out probabilities for locations not in the current city
         Object.keys(place_id_to_city).forEach(id => {
             if (place_id_to_city[id] !== currentCity) {
                 predictions[id] = 0;
@@ -48,16 +55,21 @@ function predictNextLocation(currentSequence,place_id_to_city, id_to_place_name,
         // Get the ID of the location with the highest remaining probability
         const predictedId = predictions.indexOf(Math.max(...predictions));
         const predictedPlace = id_to_place_name[predictedId];
+        console.log('Predicted place:', predictedPlace);
         return predictedPlace;
-    });
+
+    } catch (error) {
+        console.error('Error making prediction:', error);
+        throw error;
+    }
 }
 
-async function generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id) {
+async function generateTourSequence(initialLocation, place_id_to_city, id_to_place_name, place_name_to_id) {
     // This function assumes initialLocation and category are already filtered
-    const tourSequence = [initialLocation];
-    
+    const tourSequence = [initialLocation, 'Mall Thamrin City'];
+
     while (tourSequence.length < 5) {
-        const nextLocation = await predictNextLocation(tourSequence.slice(-window_size),place_id_to_city, id_to_place_name, place_name_to_id);
+        const nextLocation = await predictNextLocation(tourSequence.slice(-window_size), place_id_to_city, id_to_place_name, place_name_to_id);
         tourSequence.push(nextLocation);
     }
 
@@ -74,5 +86,4 @@ async function main() {
 
 module.exports={
     generateTourSequence,
-    loadModel
 }

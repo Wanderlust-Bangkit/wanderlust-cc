@@ -25,7 +25,8 @@ const place_id_to_city = {
 const window_size = 2;
 
 async function predictNextLocation(currentSequence, place_id_to_city, id_to_place_name, place_name_to_id) {
-    const currentSequenceIds = currentSequence.map(place => place_name_to_id[place]);
+    const overallSequenceIds = currentSequence.map(place => place_name_to_id[place]);
+    const currentSequenceIds = currentSequence.slice(-window_size).map(place => place_name_to_id[place]);
     const currentCity = place_id_to_city[currentSequenceIds[0]];
     const inputSequence = currentSequenceIds.slice(-window_size);
 
@@ -41,7 +42,7 @@ async function predictNextLocation(currentSequence, place_id_to_city, id_to_plac
         console.log('Predictions:', predictions);
 
         // Zero out probabilities for locations in the input sequence
-        inputSequence.forEach(id => {
+        overallSequenceIds.forEach(id => {
             predictions[id] = 0;
         });
 
@@ -69,7 +70,7 @@ async function generateTourSequence(initialLocation, place_id_to_city, id_to_pla
     const tourSequence = [initialLocation, 'Mall Thamrin City'];
 
     while (tourSequence.length < 5) {
-        const nextLocation = await predictNextLocation(tourSequence.slice(-window_size), place_id_to_city, id_to_place_name, place_name_to_id);
+        const nextLocation = await predictNextLocation(tourSequence, place_id_to_city, id_to_place_name, place_name_to_id, );
         tourSequence.push(nextLocation);
     }
 

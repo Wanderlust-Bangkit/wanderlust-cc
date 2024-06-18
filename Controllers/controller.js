@@ -419,20 +419,23 @@ async function destinationML(request,h){
             'Sea World Ancol': 7,
             'Pantai Ancol Jakarta': 8,
             'Museum Sejara Jakarta': 9,
+            'Gedung Bank Indonesia': 10,
+            'Sudirman-Thamrin': 11,
+            'Taman Mini Indonesia Indah': 12,
+            'Galeri Bank Indonesia': 13,
+            'Pasar Baru': 14,
+            'Masjid Jami Kebon Jeruk': 15,
+            'Museum BI': 16,
+            'Juanda': 21,
 
         };
-        // generate
-        const id_to_place_name = {
-            1: 'Kota Tua',
-            3: 'Monas',
-            4: 'Masjid Istiqlal',
-            5: 'Mall Thamrin City',
-            6: 'Museum Fatahillah',
-            7: 'Sea World Ancol',
-            8: 'Pantai Ancol Jakarta',
-            9: 'Museum Sejara Jakarta',
-        } ;
+        // reverse the key and value of place_name_to_id
+        const id_to_place_name = {};
+        Object.keys(place_name_to_id).forEach(key => {
+            id_to_place_name[place_name_to_id[key]] = key;
+        });
 
+        // all places are in Jakarta
         const place_id_to_city = {
             1: 'Jakarta',
             3: 'Jakarta',
@@ -442,6 +445,14 @@ async function destinationML(request,h){
             7: 'Jakarta',
             8: 'Jakarta',
             9: 'Jakarta',
+            10: 'Jakarta',
+            11: 'Jakarta',
+            12: 'Jakarta',
+            13: 'Jakarta',
+            14: 'Jakarta',
+            15: 'Jakarta',
+            16: 'Jakarta',
+            21: 'Jakarta',
         };
 
         const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id);

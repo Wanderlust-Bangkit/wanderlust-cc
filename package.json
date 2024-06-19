@@ -15,7 +15,6 @@
     "@firebase/auth": "^1.7.4",
     "@firebase/firestore": "^4.6.3",
     "@hapi/hapi": "^21.3.9",
-    "@tensorflow/tfjs-node": "^4.20.0",
     "axios": "^1.7.2",
     "bcryptjs": "^2.4.3",
     "dotenv": "^16.4.5",

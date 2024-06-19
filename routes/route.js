@@ -71,7 +71,7 @@ const routes = [
         handler: search
     },{
         path:'/suggestion',
-        method: 'GET',
+        method: 'POST',
         handler: destinationML
     }
     

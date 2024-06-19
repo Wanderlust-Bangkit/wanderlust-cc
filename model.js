@@ -41,6 +41,7 @@ async function predictNextLocation(currentSequence, place_id_to_city, id_to_plac
 
         console.log('Predictions:', predictions);
 
+
         // Zero out probabilities for locations in the input sequence
         overallSequenceIds.forEach(id => {
             predictions[id] = 0;

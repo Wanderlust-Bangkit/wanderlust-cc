@@ -432,64 +432,17 @@ async function destinationML(request,h){
     let response;
 
     try {
-        // const destination = collection(db, 'destination');
-        // const querySnapshot = await getDocs(destination);
-        // const id_to_place_name = {};
-        // const place_name_to_id = {};
-        // const place_id_to_city = {};
-        // querySnapshot.forEach((doc) => {
-        // const data = doc.data();
-        // id_to_place_name[data.placeId] = data.placeName;
-        // place_name_to_id[data.placeName] = data.placeId;
-        // place_id_to_city[data.placeId] = data.city;
-        // });
-
-        const place_name_to_id = {
-            'Kota Tua': 1,
-            'Monas': 3,
-            'Masjid Istiqlal': 4,
-            'Mall Thamrin City': 5,
-            'Museum Fatahillah': 6,
-            'Sea World Ancol': 7,
-            'Pantai Ancol Jakarta': 8,
-            'Museum Sejara Jakarta': 9,
-            'Gedung Bank Indonesia': 10,
-            'Sudirman-Thamrin': 11,
-            'Taman Mini Indonesia Indah': 12,
-            'Galeri Bank Indonesia': 13,
-            'Pasar Baru': 14,
-            'Masjid Jami Kebon Jeruk': 15,
-            'Museum BI': 16,
-            'Juanda': 21,
-
-        };
-        // reverse the key and value of place_name_to_id
-
+        const destination = collection(db, 'destination');
+        const querySnapshot = await getDocs(destination);
         const id_to_place_name = {};
-        Object.keys(place_name_to_id).forEach(key => {
-            id_to_place_name[place_name_to_id[key]] = key;
+        const place_name_to_id = {};
+        const place_id_to_city = {};
+        querySnapshot.forEach((doc) => {
+        const data = doc.data();
+        id_to_place_name[data.placeId] = data.placeName;
+        place_name_to_id[data.placeName] = data.placeId;
+        place_id_to_city[data.placeId] = data.city;
         });
-
-
-        // all places are in Jakarta
-        const place_id_to_city = {
-            1: 'Jakarta',
-            3: 'Jakarta',
-            4: 'Jakarta',
-            5: 'Jakarta',
-            6: 'Jakarta',
-            7: 'Jakarta',
-            8: 'Jakarta',
-            9: 'Jakarta',
-            10: 'Jakarta',
-            11: 'Jakarta',
-            12: 'Jakarta',
-            13: 'Jakarta',
-            14: 'Jakarta',
-            15: 'Jakarta',
-            16: 'Jakarta',
-            21: 'Jakarta',
-        };
 
         const tourSequence = await generateTourSequence(initialLocation,place_id_to_city, id_to_place_name, place_name_to_id);
 

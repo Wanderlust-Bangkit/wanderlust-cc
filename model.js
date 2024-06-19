@@ -7,20 +7,20 @@ const axios = require('axios');
 
 let model;
 
-const place_name_to_id = {
-    'Kota Tua': 1,
-    'Mall Thamrin City': 2,
-};
+// const place_name_to_id = {
+//     'Kota Tua': 1,
+//     'Mall Thamrin City': 2,
+// };
 
-const id_to_place_name = {
-    1: 'Kota Tua',
-    2: 'Mall Thamrin City',
-};
+// const id_to_place_name = {
+//     1: 'Kota Tua',
+//     2: 'Mall Thamrin City',
+// };
 
-const place_id_to_city = {
-    1: 'Jakarta',
-    2: 'Jakarta'
-};
+// const place_id_to_city = {
+//     1: 'Jakarta',
+//     2: 'Jakarta'
+// };
 
 const window_size = 2;
 
@@ -78,13 +78,13 @@ async function generateTourSequence(initialLocation, place_id_to_city, id_to_pla
     return tourSequence;
 }
 
-async function main() {
-    await loadModel();
-    const initialLocation = 'Kota Tua'; // isi pake random tour berdasarkan kota dan category yang dipilih user
+// async function main() {
+//     await loadModel();
+//     const initialLocation = 'Kota Tua'; // isi pake random tour berdasarkan kota dan category yang dipilih user
 
-    const tourSequence = await generateTourSequence(initialLocation);
-    console.log(`The generated tour sequence is: ${tourSequence}`);
-}
+//     const tourSequence = await generateTourSequence(initialLocation);
+//     console.log(`The generated tour sequence is: ${tourSequence}`);
+// }
 
 module.exports={
     generateTourSequence,

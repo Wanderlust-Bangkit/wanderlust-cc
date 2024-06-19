@@ -41,7 +41,6 @@ async function predictNextLocation(currentSequence, place_id_to_city, id_to_plac
 
         console.log('Predictions:', predictions);
 
-
         // Zero out probabilities for locations in the input sequence
         overallSequenceIds.forEach(id => {
             predictions[id] = 0;
@@ -66,9 +65,9 @@ async function predictNextLocation(currentSequence, place_id_to_city, id_to_plac
     }
 }
 
-async function generateTourSequence(initialLocation, place_id_to_city, id_to_place_name, place_name_to_id) {
+async function generateTourSequence(initialLocation,initialLocation2, place_id_to_city, id_to_place_name, place_name_to_id) {
     // This function assumes initialLocation and category are already filtered
-    const tourSequence = [initialLocation, 'Mall Thamrin City'];
+    const tourSequence = [initialLocation, initialLocation2];
 
     while (tourSequence.length < 5) {
         const nextLocation = await predictNextLocation(tourSequence, place_id_to_city, id_to_place_name, place_name_to_id, );
@@ -78,13 +77,13 @@ async function generateTourSequence(initialLocation, place_id_to_city, id_to_pla
     return tourSequence;
 }
 
-// async function main() {
-//     await loadModel();
-//     const initialLocation = 'Kota Tua'; // isi pake random tour berdasarkan kota dan category yang dipilih user
+async function main() {
+    await loadModel();
+    const initialLocation = 'Kota Tua'; // isi pake random tour berdasarkan kota dan category yang dipilih user
 
-//     const tourSequence = await generateTourSequence(initialLocation);
-//     console.log(`The generated tour sequence is: ${tourSequence}`);
-// }
+    const tourSequence = await generateTourSequence(initialLocation);
+    console.log(`The generated tour sequence is: ${tourSequence}`);
+}
 
 module.exports={
     generateTourSequence,

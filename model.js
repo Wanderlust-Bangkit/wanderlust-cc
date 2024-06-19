@@ -1,6 +1,6 @@
 // import * as tf from '@tensorflow/tfjs'; 
 
-const tf = require('@tensorflow/tfjs-node');
+// const tf = require('@tensorflow/tfjs-node');
 const path = require('path');
 const axios = require('axios');
 
@@ -33,7 +33,7 @@ async function predictNextLocation(currentSequence, place_id_to_city, id_to_plac
     console.log('Making prediction for input sequence:', inputSequence);
 
     try {
-        const response = await axios.post('http://34.135.211.146/v1/models/tour_locations_model:predict', {
+        const response = await axios.post('http://34.122.212.249/v1/models/tour_locations_model:predict', {
             instances: [inputSequence]
         });
 

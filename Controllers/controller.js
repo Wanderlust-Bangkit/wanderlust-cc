@@ -128,29 +128,11 @@ async function getDestinationHandler(request,h){
 }
 
 async function addFavorit(request, h) {
-  const { destinationId } = request.payload;
-  const token = request.headers.authorization;
+  const { destinationId, userId } = request.payload;
 
   let response;
   try {
-    if (!token) {
-        return h.response({
-          error: true,
-          message: 'Token not found',
-        });
-      }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!decoded) {
-        return h.response({
-            error: true,
-            message: 'Token not valid',
-        });
-    }
-
-    const userId = decoded.userId;
-      
+          
     const destinationRef = doc(db, 'destination', destinationId);
     const destinationDoc = await getDoc(destinationRef);
 
@@ -195,28 +177,10 @@ async function getFavorit(request, h) {
 }
 
 async function deleteFavorit(request, h) {
-  const { destinationId } = request.payload;
-  const token = request.headers.authorization;
+  const { destinationId, userId } = request.payload;
 
   let response;
   try {
-    if (!token) {
-        return h.response({
-          error: true,
-          message: 'Token not found',
-        });
-      }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-    if (!decoded) {
-        return h.response({
-            error: true,
-            message: 'Token not valid',
-        });
-    }
-
-    const userId = decoded.userId;
     const favoritColRef = collection(db, 'Users', userId, 'Favorites');
     await deleteDoc(doc(favoritColRef, destinationId));
     response = h.response({
@@ -496,7 +460,6 @@ async function destinationML(request, h) {
             response = h.response({
                 error: false,
                 data: [],
-                tes: "sini"
             });
         }
     } catch (error) {

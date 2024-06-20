@@ -198,12 +198,12 @@ async function deleteFavorit(request, h) {
 }
 
 async function createItinerary(request, h) {
-    const { name, destination, startDate, endDate, category, userId} = request.payload;
+    const { nameItenarary, startDate, endDate, location, userId, plan} = request.payload;
     // form validation
-    if (!name || !destination || !startDate || !endDate || !category ) {
+    if (!userId || !startDate || !plan || !endDate || !location || !nameItenarary ) {
         return h.response({
             error: true,
-            message: "All fields are required: name, destination, startDate, endDate, category"
+            message: "All fields are required: name itenarary, startDate, endDate, plaane, location"
         });
     }
     try {
@@ -211,11 +211,12 @@ async function createItinerary(request, h) {
         const itinerary = collection(db, 'Itinerary');
 
         const docRef = await addDoc(itinerary, {
-            name: name,
-            destination: destination,
+            nameItenarary: nameItenarary,
+            location: location,
             startDate: startDate,
             endDate: endDate,
             userId: userId,
+            plan: plan
         });
 
         console.log('Document written with ID:', docRef.id);

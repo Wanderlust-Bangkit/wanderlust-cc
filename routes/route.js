@@ -5,8 +5,8 @@ const {
     addFavorit,
     getFavorit,
     deleteFavorit,
-    createItinenary,
-    getItinenary,
+    createItinerary,
+    getItinerary,
     getDestinationByCategory,
     getAllCategory,
     destinationML,
@@ -46,14 +46,14 @@ const routes = [
         handler: deleteFavorit 
     },
     {
-        path: '/itinenary',
+        path: '/createItinerary',
         method: 'POST',
-        handler: createItinenary
+        handler: createItinerary
     },
     {
-        path: '/itinenary',
+        path: '/getItinerary/{userId}',
         method: 'GET',
-        handler: getItinenary
+        handler: getItinerary
     },
     {
         path: '/destination/{category}',

@@ -197,85 +197,48 @@ async function deleteFavorit(request, h) {
   return response;
 }
 
-async function createItinenary(request, h) {
-    const { name, destination, startDate, endDate } = request.payload;
-
+async function createItinerary(request, h) {
+    const { name, destination, startDate, endDate, category, userId} = request.payload;
     // form validation
-    if (!name || !destination || !startDate || !endDate) {
+    if (!name || !destination || !startDate || !endDate || !category ) {
         return h.response({
             error: true,
-            message: "All fields are required: name, destination, startDate, endDate"
+            message: "All fields are required: name, destination, startDate, endDate, category"
         });
     }
-
-    // check token from header
-    const token = request.headers.authorization;
-
-    if (!token) {
-        return h.response({
-            error: true,
-            message: "Token not found"
-        });
-    }
-
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        
+        const itinerary = collection(db, 'Itinerary');
 
-        if (!decoded) {
-            return h.response({
-                error: true,
-                message: "Token not valid"
-            });
-        }
-
-        const itenary = collection(db, 'Itinenary');
-
-        const docRef = await addDoc(itenary, {
+        const docRef = await addDoc(itinerary, {
             name: name,
             destination: destination,
             startDate: startDate,
             endDate: endDate,
-            userId: decoded.userId
+            userId: userId,
         });
 
         console.log('Document written with ID:', docRef.id);
-
     } catch (error) {
-        console.error('Error adding itenary:', error);
+        console.error('Error adding itinerary:', error);
         return h.response({
             error: true,
-            message: "Token not valid"
+            message: error.message
         });
     }
 
     return h.response({
         error: false,
-        message: "Itinenary created"
+        message: "Itinerary created"
     });
 }
 
-async function getItinenary(request, h) {
-    const token = request.headers.authorization;
-
-    if (!token) {
-        return h.response({
-            error: true,
-            message: "Token not found"
-        });
-    }
+async function getItinerary(request, h) {
+    const userId = request.params.userId;
 
     try {
-        const decoded = jwt.verify(token, process.env.JWT_SECRET);
-
-        if (!decoded) {
-            return h.response({
-                error: true,
-                message: "Token not valid"
-            });
-        }
-
-        const itenary = collection(db, 'Itinenary');
-        const q = query(itenary, where("userId", "==", decoded.userId));
+        const itenary = collection(db, 'Itinerary');
+        const q = query(itenary, where("userId", "==", userId));
         const querySnapshot = await getDocs(q);
         const data = [];
         querySnapshot.forEach((doc) => {
@@ -290,7 +253,7 @@ async function getItinenary(request, h) {
         console.error('Error getting itenary:', error);
         return h.response({
             error: true,
-            message: "Token not valid"
+            message: error.message
         });
     }
 }
@@ -479,8 +442,8 @@ module.exports = {
     addFavorit,
     getFavorit,
     deleteFavorit,
-    createItinenary,
-    getItinenary,
+    createItinerary,
+    getItinerary,
     getDestinationByCategory,
     getAllCategory,
     destinationML,
